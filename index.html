@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Söylemez - Bestellung / Sipariş</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-md p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Söylemez Unternehmen</h1>
+        <p class="text-center text-sm text-gray-500 mb-6">Bestellsystem / Sipariş Sistemi</p>
+        
+        <!-- Mod Seçimi -->
+        <div class="flex mb-4 bg-gray-200 p-1 rounded-lg">
+            <button id="btn-restoran" onclick="switchMode('restoran')" class="flex-1 py-2 rounded-md font-medium text-sm bg-white shadow text-blue-600">Restoran (Kg/Toptan)</button>
+            <button id="btn-market" onclick="switchMode('market')" class="flex-1 py-2 rounded-md font-medium text-sm text-gray-600">Market (Paket/Adet)</button>
+        </div>
+
+        <!-- Müşteri Bilgileri -->
+        <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-600 mb-1">Firma / İşletme Adı (*)</label>
+            <input type="text" id="company-name" placeholder="Örn: Urfa Grill & Restaurant" class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Arama -->
+        <div class="mb-4">
+            <input type="text" id="search" oninput="filterItems()" placeholder="Ürün adı veya Kod No ile ara..." class="w-full border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Ürün Listesi -->
+        <div id="item-list" class="space-y-2 max-h-96 overflow-y-auto mb-6 pr-1"></div>
+
+        <!-- Sipariş Notu & Gönder -->
+        <div class="border-t pt-4">
+            <textarea id="order-note" placeholder="Sipariş notunuz (Opsiyonel)" class="w-full border rounded-lg p-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
+            <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+                <span>💬 WhatsApp ile Siparişi Gönder</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const phone = "491779746329";
+        let currentMode = "restoran";
+        let cart = {};
+
+        // Excel verilerinizden aktarılan kategoriler
+        const products = {
+            restoran: [
+                {nr: "20531", name: "Anis ganz • Tüm Anason", price: 7.5, unit: "kg"},
+                {nr: "20521", name: "Anis gemahlen • Toz Anason", price: 7.5, unit: "kg"},
+                {nr: "10161", name: "Basilikum gerebelt • Fesleğen", price: 5.75, unit: "kg"},
+                {nr: "20621", name: "Blaumohn • Haşhaş", price: 6.9, unit: "kg"},
+                {nr: "20481", name: "Bockshornkleesaat ganz • Tüm Çemen", price: 6.5, unit: "kg"},
+                {nr: "20305", name: "Chili Bird eyes 1-2cm • Mini aci biber tüm 500gr", price: 8.75, unit: "kg"}
+            ],
+            market: [
+                {nr: "649", name: "Pfeffer bunt • Renkli biber karışımı", price: 2.5, unit: "Stk"},
+                {nr: "90381", name: "Pfeffer schwarz ganz • Tüm Karabiber", price: 2.0, unit: "Stk"},
+                {nr: "552", name: "Pfeffer schwarz gemahlen • Toz Karabiber", price: 2.0, unit: "Stk"},
+                {nr: "901", name: "Pfeffer schwarz geschrotet • Kırık Karabiber", price: 2.0, unit: "Stk"},
+                {nr: "70903", name: "Rosmarin geschnitten • Biberiye", price: 1.5, unit: "Stk"}
+            ]
+        };
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-restoran').className = mode === 'restoran' ? 'flex-1 py-2 rounded-md font-medium text-sm bg-white shadow text-blue-600' : 'flex-1 py-2 rounded-md font-medium text-sm text-gray-600';
+            document.getElementById('btn-market').className = mode === 'market' ? 'flex-1 py-2 rounded-md font-medium text-sm bg-white shadow text-blue-600' : 'flex-1 py-2 rounded-md font-medium text-sm text-gray-600';
+            cart = {};
+            renderList();
+        }
+
+        function renderList() {
+            const listContainer = document.getElementById('item-list');
+            const search = document.getElementById('search').value.toLowerCase();
+            listContainer.innerHTML = '';
+
+            const filtered = products[currentMode].filter(p => p.name.toLowerCase().includes(search) || p.nr.includes(search));
+
+            filtered.forEach(p => {
+                const qty = cart[p.nr] || 0;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center border p-3 rounded-lg text-sm bg-gray-50';
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <span class="text-xs text-gray-400 font-mono">[${p.nr}]</span>
+                        <div class="font-semibold text-gray-800">${p.name}</div>
+                        <div class="text-xs text-gray-500">${p.price ? p.price.toFixed(2) + ' € / ' + p.unit : ''}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="updateQty('${p.nr}', -1)" class="w-8 h-8 bg-gray-200 rounded-lg text-lg font-bold flex items-center justify-center">-</button>
+                        <span class="w-6 text-center font-bold text-gray-700">${qty}</span>
+                        <button onclick="updateQty('${p.nr}', 1)" class="w-8 h-8 bg-blue-600 text-white rounded-lg text-lg font-bold flex items-center justify-center">+</button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function updateQty(nr, delta) {
+            const current = cart[nr] || 0;
+            const updated = current + delta;
+            if (updated <= 0) delete cart[nr];
+            else cart[nr] = updated;
+            renderList();
+        }
+
+        function filterItems() { renderList(); }
+
+        function sendOrder() {
+            const company = document.getElementById('company-name').value.trim();
+            if (!company) { alert('Lütfen Firma / İşletme Adınızı giriniz.'); return; }
+
+            const keys = Object.keys(cart);
+            if (keys.length === 0) { alert('Lütfen sipariş listenize en az bir ürün ekleyiniz.'); return; }
+
+            let text = `📋 *SÖYLEMEZ BESTELLUNG / SİPARİŞ*\n\n`;
+            text += `🏢 *İşletme:* ${company}\n`;
+            text += `📌 *Kategori:* ${currentMode === 'restoran' ? 'Restoran (Toptan)' : 'Market (Perakende)'}\n`;
+            text += `📅 *Tarih:* ${new Date().toLocaleDateString('de-DE')}\n\n`;
+            text += `📦 *Sipariş Detayı:*\n`;
+
+            keys.forEach(nr => {
+                const item = products[currentMode].find(p => p.nr === nr);
+                text += `- [${item.nr}] ${item.name} | *${cart[nr]} ${item.unit}*\n`;
+            });
+
+            const note = document.getElementById('order-note').value.trim();
+            if (note) text += `\n💬 *Not:* ${note}`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        renderList();
+    </script>
+</body>
+</html>
