@@ -2,14 +2,23 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Söylemez - Bestellung / Sipariş</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Söylemez - Sipariş Uygulaması</title>
+    
+    <!-- Mobil Uygulama (PWA) Ayarları -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Söylemez">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen p-4">
-    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6">
+<body class="bg-gray-100 min-h-screen p-3 md:p-6 select-none">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-4 md:p-6">
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-1">Söylemez Unternehmen</h1>
-        <p class="text-center text-sm text-gray-500 mb-6">Bestellsystem / Sipariş Sistemi</p>
+        <p class="text-center text-sm text-gray-500 mb-5">Bestellsystem / Sipariş Sistemi</p>
         
         <!-- Tab Seçimi -->
         <div class="flex mb-4 bg-gray-200 p-1 rounded-lg">
@@ -29,7 +38,7 @@
         </div>
 
         <!-- Ürün Listesi -->
-        <div id="item-list" class="space-y-2 max-h-[450px] overflow-y-auto mb-6 pr-1"></div>
+        <div id="item-list" class="space-y-2 max-h-[420px] overflow-y-auto mb-5 pr-1"></div>
 
         <!-- Alt Bilgi & Gönder -->
         <div class="border-t pt-4">
@@ -37,7 +46,7 @@
                 <span class="text-sm font-semibold text-gray-600">Seçilen Ürün Sayısı: <span id="cart-count" class="text-blue-600">0</span></span>
             </div>
             <textarea id="order-note" placeholder="Sipariş notunuz veya özel istekleriniz (Opsiyonel)" class="w-full border rounded-lg p-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
-            <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 text-base transition">
+            <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 text-base transition active:scale-95">
                 <span>💬 WhatsApp ile Siparişi Gönder</span>
             </button>
         </div>
@@ -185,9 +194,9 @@
                         <div class="text-xs text-blue-600 font-medium mt-0.5">${p.price ? p.price.toFixed(2) + ' € / ' + p.unit : ''}</div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="updateQty('${p.nr}', -1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg text-lg font-bold flex items-center justify-center text-gray-700">-</button>
+                        <button onclick="updateQty('${p.nr}', -1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg text-lg font-bold flex items-center justify-center text-gray-700 active:scale-90">-</button>
                         <span class="w-7 text-center font-bold text-gray-800 text-sm">${qty}</span>
-                        <button onclick="updateQty('${p.nr}', 1)" class="w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-bold flex items-center justify-center">+</button>
+                        <button onclick="updateQty('${p.nr}', 1)" class="w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-bold flex items-center justify-center active:scale-90">+</button>
                     </div>
                 `;
                 listContainer.appendChild(div);
