@@ -58,7 +58,7 @@
         const phone = "491779746329";
         let cart = {};
 
-        // GÜNCEL RESTORAN / TOPTAN ÜRÜN LİSTESİ
+        // EKSİKSİZ TAM RESTORAN / TOPTAN ÜRÜN LİSTESİ
         const products = [
             {nr: "20531", name: "Anis ganz • Tüm Anason", price: 7.50, unit: "kg"},
             {nr: "20521", name: "Anis gemahlen • Toz Anason", price: 7.50, unit: "kg"},
@@ -72,7 +72,7 @@
             {nr: "20306", name: "Chili Bird eyes gesch. • Mini aci biber parcali", price: 0, unit: "kg"},
             {nr: "20141", name: "Chili gemahlen • Acı Toz Biber", price: 6.50, unit: "kg"},
             {nr: "20111", name: "Chili gesch. (o.Saat-ext.) • Pul Biber ext. acılı", price: 7.50, unit: "kg"},
-            {nr: "20121", name: "Chili gesch. (o.Saat) • Pul Biber (çekirdeksiz)", price: 8.50, unit: "kg"},
+            {nr: "20121", name: "Chili gesch. (o.Saat) • Pul Biber (çekirdeksiz)", price: 6.50, unit: "kg"},
             {nr: "20101", name: "Chili gesch. (mit Saat) • Pul Biber (çekirdekli)", price: 6.50, unit: "kg"},
             {nr: "20421", name: "Cumin ganz • Tüm Kimyon", price: 7.50, unit: "kg"},
             {nr: "20411", name: "Cumin gemahlen • Toz Kimyon", price: 7.50, unit: "kg"},
@@ -90,7 +90,7 @@
             {nr: "20192", name: "Knoblauchpulver • Toz Sarimsak", price: 7.00, unit: "kg"},
             {nr: "20401", name: "Koriander ganz • Tüm Kişniş", price: 7.00, unit: "kg"},
             {nr: "20391", name: "Koriander gemahlen • Toz Kişniş", price: 7.50, unit: "kg"},
-            {nr: "10105", name: "Lorbeerblätter • Defne yaprağı 500gr", price: 8.25, unit: "kg"},
+            {nr: "10105", name: "Lorbeerblätter • Defne yaprağı 500gr", price: 6.25, unit: "kg"},
             {nr: "752", name: "Lorbeerblätter gemahlen • Toz Defne yaprağı", price: 0, unit: "kg"},
             {nr: "30461", name: "Mahlep ganz", price: 0, unit: "kg"},
             {nr: "440", name: "Mahlep gemahlen", price: 0, unit: "kg"},
@@ -131,7 +131,35 @@
             {nr: "10171", name: "Thymian gerebelt • Dağ kekiği", price: 8.50, unit: "kg"},
             {nr: "20501", name: "Zimt gemahlen • Toz Tarçın", price: 8.50, unit: "kg"},
             {nr: "20515", name: "Zimt Stange • Çubuk Tarçın", price: 14.00, unit: "kg"},
-            {nr: "20371", name: "Zitronensäure • Limon tuzu", price: 4.00, unit: "kg"}
+            {nr: "20371", name: "Zitronensäure • Limon tuzu", price: 4.00, unit: "kg"},
+            {nr: "20231", name: "Zwiebelgranulat • Granül Soğan", price: 6.50, unit: "kg"},
+            {nr: "20221", name: "Zwiebelpulver • Toz Soğan", price: 6.50, unit: "kg"},
+            {nr: "30131", name: "Arabisches Siebengewürz • Arap baharatı", price: 14.00, unit: "kg"},
+            {nr: "80154", name: "Bayvega Würzmittel • Sebzeli Çeşni", price: 5.50, unit: "kg"},
+            {nr: "30181", name: "Dönergewürz • Döner baharatı", price: 8.50, unit: "kg"},
+            {nr: "30281", name: "Falafel Gewürzmischung • Falafel baharatı", price: 12.50, unit: "kg"},
+            {nr: "30121", name: "Frikadellen Gewürzmischung • Köfte baharatı", price: 6.50, unit: "kg"},
+            {nr: "30100", name: "Garam Masala", price: 7.50, unit: "kg"},
+            {nr: "30241", name: "Gewürzzubereitung • Salata baharatı", price: 8.50, unit: "kg"},
+            {nr: "30141", name: "Grill Gewürz • Mangal baharatı", price: 7.50, unit: "kg"},
+            {nr: "30161", name: "Gyros Gewürz • Gyros baharatı", price: 7.50, unit: "kg"},
+            {nr: "30262", name: "Harissa", price: 7.50, unit: "kg"},
+            {nr: "30221", name: "Hähnchen Gewürzmischung • Tavuk baharatı", price: 6.50, unit: "kg"},
+            {nr: "30111", name: "Hähnchen Würzsalz • Tavuk tuzu 2Kg", price: 3.50, unit: "stk"},
+            {nr: "30201", name: "Kräuter de la Provence", price: 8.50, unit: "kg"},
+            {nr: "30555", name: "Mexico Mix • Meksika karisimi", price: 0, unit: "kg"},
+            {nr: "30151", name: "Pizzagewürz • Pizza baharatı", price: 8.50, unit: "kg"},
+            {nr: "30101", name: "Pommes Würzsalz • Patates kız. tuzu 2Kg", price: 3.50, unit: "stk"},
+            {nr: "30191", name: "Rotes Steakgewürz • Steak baharatı", price: 0, unit: "kg"},
+            {nr: "30231", name: "Schawarma Mischung • Sawarma baharatı", price: 12.50, unit: "kg"},
+            {nr: "30171", name: "Steakgewürz (Argent.) • Et baharatı Arjantin", price: 8.50, unit: "kg"},
+            {nr: "30454", name: "Sucuk Gewürz • Sucuk baharatı", price: 0, unit: "kg"},
+            {nr: "493", name: "Gekörnte Brühe • Et Suyu", price: 10.00, unit: "kg"},
+            {nr: "30291", name: "Gemüsebrühe • Sebze suyu", price: 10.00, unit: "kg"},
+            {nr: "40101", name: "Glutamat E621", price: 7.00, unit: "kg"},
+            {nr: "30311", name: "Hähnchenbrühe • Tavuk suyu", price: 10.00, unit: "kg"},
+            {nr: "30301", name: "Rinderbrühe • Et suyu", price: 10.00, unit: "kg"},
+            {nr: "20701", name: "Wallnuss • Ceviz", price: 10.50, unit: "kg"}
         ];
 
         function renderList() {
@@ -210,7 +238,7 @@
 
             keys.forEach(nr => {
                 const item = products.find(p => p.nr === nr);
-                const itemTotal = cart[nr] * (item.price || 0); // Fiyat yoksa 0 hesaplanır
+                const itemTotal = cart[nr] * (item.price || 0);
                 grandTotal += itemTotal;
                 text += `- [${item.nr}] ${item.name} | *${cart[nr]} ${item.unit}* ${item.price ? '(' + itemTotal.toFixed(2) + ' €)' : ''}\n`;
             });
