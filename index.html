@@ -21,6 +21,10 @@
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PDF Oluşturucu Kütüphaneler -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen pt-10 pb-8 px-3 md:px-6 md:pt-6 select-none">
     <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-4 md:p-6">
@@ -48,8 +52,9 @@
                 <span class="text-base font-bold text-gray-800">Toplam: <span id="cart-total" class="text-green-600 font-extrabold">0.00 €</span></span>
             </div>
             <textarea id="order-note" placeholder="Sipariş notunuz veya özel istekleriniz (Opsiyonel)" class="w-full border rounded-xl p-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="2"></textarea>
-            <button onclick="sendOrder()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-base transition active:scale-95 shadow-lg shadow-green-600/20">
-                <span>💬 WhatsApp ile Siparişi Gönder</span>
+            
+            <button onclick="sendOrderAsPDF()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 text-base transition active:scale-95 shadow-lg shadow-red-600/20">
+                <span>📄 PDF Sipariş Oluştur & WhatsApp ile Gönder</span>
             </button>
         </div>
     </div>
@@ -58,7 +63,6 @@
         const phone = "491779746329";
         let cart = {};
 
-        // EKSİKSİZ TAM RESTORAN / TOPTAN ÜRÜN LİSTESİ
         const products = [
             {nr: "20531", name: "Anis ganz • Tüm Anason", price: 7.50, unit: "kg"},
             {nr: "20521", name: "Anis gemahlen • Toz Anason", price: 7.50, unit: "kg"},
@@ -222,33 +226,73 @@
 
         function filterItems() { renderList(); }
 
-        function sendOrder() {
+        function sendOrderAsPDF() {
             const company = document.getElementById('company-name').value.trim();
             if (!company) { alert('Lütfen Firma / İşletme Adınızı giriniz.'); return; }
 
             const keys = Object.keys(cart);
             if (keys.length === 0) { alert('Lütfen sipariş listenize en az bir ürün ekleyiniz.'); return; }
 
-            let text = `📋 *SÖYLEMEZ BESTELLUNG / SİPARİŞ*\n\n`;
-            text += `🏢 *İşletme:* ${company}\n`;
-            text += `📅 *Tarih:* ${new Date().toLocaleDateString('de-DE')}\n\n`;
-            text += `📦 *Sipariş Detayı:*\n`;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
+            // PDF Başlık ve Şirket Bilgisi
+            doc.setFontSize(18);
+            doc.text("SÖYLEMEZ UNTERNEHMEN", 14, 20);
+            doc.setFontSize(12);
+            doc.text("Siparis Formu / Bestellformular", 14, 28);
+
+            doc.setFontSize(10);
+            doc.text(`Firma: ${company}`, 14, 38);
+            doc.text(`Tarih: ${new Date().toLocaleDateString('de-DE')}`, 14, 44);
+
+            // Tablo Oluşturma
+            const tableData = [];
             let grandTotal = 0;
 
             keys.forEach(nr => {
                 const item = products.find(p => p.nr === nr);
-                const itemTotal = cart[nr] * (item.price || 0);
+                const qty = cart[nr];
+                const itemTotal = qty * (item.price || 0);
                 grandTotal += itemTotal;
-                text += `- [${item.nr}] ${item.name} | *${cart[nr]} ${item.unit}* ${item.price ? '(' + itemTotal.toFixed(2) + ' €)' : ''}\n`;
+
+                tableData.push([
+                    item.nr,
+                    item.name,
+                    `${qty} ${item.unit}`,
+                    item.price ? `${item.price.toFixed(2)} €` : '-',
+                    item.price ? `${itemTotal.toFixed(2)} €` : '-'
+                ]);
             });
 
-            text += `\n💰 *Genel Toplam:* *${grandTotal.toFixed(2)} €*\n`;
+            doc.autoTable({
+                startY: 50,
+                head: [['Art.-Nr.', 'Urun Adi', 'Miktar', 'Birim Fiyat', 'Toplam']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [37, 99, 235] }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(12);
+            doc.text(`Genel Toplam: ${grandTotal.toFixed(2)} EUR`, 14, finalY);
 
             const note = document.getElementById('order-note').value.trim();
-            if (note) text += `💬 *Not:* ${note}\n`;
+            if (note) {
+                finalY += 8;
+                doc.setFontSize(10);
+                doc.text(`Siparis Notu: ${note}`, 14, finalY);
+            }
 
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+            // PDF İndirme İşlemi
+            const fileName = `Siparis_${company.replace(/\s+/g, '_')}.pdf`;
+            doc.save(fileName);
+
+            // WhatsApp Yönlendirme Mesajı
+            const waText = `Merhaba, ${company} adina siparis dosyam (PDF) olusturuldu. Indirilen PDF dosyasini ekte sunuyorum.`;
+            alert('Sipariş PDF dosyanız cihazınıza indirildi! Açılan WhatsApp sohbetine indirilen PDF belgesini tutturup gönderebilirsiniz.');
+            
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(waText)}`, '_blank');
         }
 
         renderList();
