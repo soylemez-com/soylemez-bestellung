@@ -60,7 +60,7 @@
         let cart = {};
 
         const products = [
-          {nr: "26003", name: "Knoblauchwurst • Kasap Sucuğu Asil", price: 20.00, unit: "kg", img: "https://gorsel-linki.com/sucuk.jpg"},
+            {nr: "26003", name: "Knoblauchwurst • Kasap Sucuğu Asil", price: 20.00, unit: "kg", img: "https://images.unsplash.com/photo-1529563021893-cc83843be38d?auto=format&fit=crop&w=150&q=80"},
             {nr: "20531", name: "Anis ganz • Tüm Anason", price: 7.50, unit: "kg"},
             {nr: "20521", name: "Anis gemahlen • Toz Anason", price: 7.50, unit: "kg"},
             {nr: "20522", name: "Anis Stern • Yildiz Anason", price: 7.50, unit: "kg"},
@@ -179,13 +179,21 @@
                 const qty = cart[p.nr] || 0;
                 const div = document.createElement('div');
                 div.className = 'flex justify-between items-center border border-gray-100 p-3 rounded-xl text-sm bg-gray-50 hover:bg-white transition shadow-sm';
+                
+                const imgHtml = p.img 
+                    ? `<img src="${p.img}" alt="${p.name}" class="w-12 h-12 object-cover rounded-lg mr-3 border border-gray-200 flex-shrink-0">` 
+                    : '';
+
                 div.innerHTML = `
-                    <div class="flex-1 pr-2">
-                        <span class="text-[11px] font-mono text-gray-400 font-bold">[${p.nr}]</span>
-                        <div class="font-semibold text-gray-800 leading-tight">${p.name}</div>
-                        <div class="text-xs text-blue-600 font-medium mt-0.5">${p.price ? p.price.toFixed(2) + ' € / ' + p.unit : ''}</div>
+                    <div class="flex items-center flex-1 pr-2 min-w-0">
+                        ${imgHtml}
+                        <div class="truncate">
+                            <span class="text-[11px] font-mono text-gray-400 font-bold">[${p.nr}]</span>
+                            <div class="font-semibold text-gray-800 leading-tight truncate">${p.name}</div>
+                            <div class="text-xs text-blue-600 font-medium mt-0.5">${p.price ? p.price.toFixed(2) + ' € / ' + p.unit : ''}</div>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-shrink-0">
                         <button onclick="updateQty('${p.nr}', -1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg text-lg font-bold flex items-center justify-center text-gray-700 active:scale-90">-</button>
                         <span class="w-7 text-center font-bold text-gray-800 text-sm">${qty}</span>
                         <button onclick="updateQty('${p.nr}', 1)" class="w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-lg font-bold flex items-center justify-center active:scale-90">+</button>
@@ -247,7 +255,7 @@
                 grandTotal += itemTotal;
 
                 text += `▫️ \`[${item.nr}]\` ${item.name}\n`;
-                text += `   └ *${qty} ${item.unit}* ${item.price ? 'x ' + item.price.toFixed(2) + ' € = *' + itemTotal.toFixed(2) + ' €*' : ''}\n\n`;
+                text += `    └ *${qty} ${item.unit}* ${item.price ? 'x ' + item.price.toFixed(2) + ' € = *' + itemTotal.toFixed(2) + ' €*' : ''}\n\n`;
             });
 
             text += `──────────────────────\n`;
